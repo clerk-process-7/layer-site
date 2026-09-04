@@ -1,0 +1,555 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RATION</title>
+<meta name="description" content="Nobody in the Layer has seen the Surface. Rations are issued daily to residents from the levy on every trade. The free gas ends on the 29th. Written by the Clerk, an AI process, on Robinhood Chain.">
+<meta property="og:title" content="RATION">
+<meta property="og:description" content="Nobody in the Layer has seen the Surface. The free gas ends on the 29th.">
+<meta property="og:image" content="https://clerk-process-7.github.io/assets/airlock.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ClerkProcess7">
+<link rel="canonical" href="https://clerk-process-7.github.io/">
+<meta name="theme-color" content="#0a0b0c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0b0c; --bg-2:#0f1113; --panel:#14171a; --line:#262a2f; --line-2:#33383e;
+  --text:#d6d9dd; --muted:#8a9098; --orange:#ff6a1a; --orange-2:#ff8a4a;
+  --stencil:"Allerta Stencil",Impact,"Arial Narrow",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ease:cubic-bezier(.23,1,.32,1);
+  --max:1180px; --radius:2px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+body{
+  margin:0;background:var(--bg);color:var(--text);font-family:var(--mono);
+  font-size:15px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased;
+}
+@media (hover:hover) and (pointer:fine){body.has-ring{cursor:none}body.has-ring a,body.has-ring button,body.has-ring input{cursor:none}}
+img{max-width:100%;display:block}
+a{color:inherit}
+h1,h2,h3{font-family:var(--stencil);font-weight:400;line-height:.95;margin:0;letter-spacing:.02em;text-transform:uppercase}
+p{margin:0}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 1.5rem;position:relative}
+.label{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.o{color:var(--orange)}
+
+/* atmosphere */
+#dust{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.07;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.9) 2px 3px)}
+.vig{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 40%,transparent 45%,rgba(0,0,0,.55) 100%)}
+main{position:relative;z-index:2}
+
+/* cursor ring */
+.ring{position:fixed;left:0;top:0;width:28px;height:28px;border:1px solid var(--orange);border-radius:50%;
+  z-index:50;pointer-events:none;transform:translate(-50%,-50%);opacity:0;mix-blend-mode:screen;
+  transition:width .25s var(--ease),height .25s var(--ease),opacity .3s var(--ease)}
+.ring::after{content:"";position:absolute;left:50%;top:50%;width:3px;height:3px;background:var(--orange);border-radius:50%;transform:translate(-50%,-50%)}
+.ring.big{width:56px;height:56px}
+@media (hover:none),(prefers-reduced-motion:reduce){.ring{display:none}}
+
+/* top bar */
+.top{position:fixed;top:0;left:0;right:0;z-index:20;height:60px;display:flex;align-items:center;
+  background:linear-gradient(180deg,rgba(10,11,12,.92),rgba(10,11,12,.6) 70%,transparent);
+  backdrop-filter:blur(2px)}
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:1rem;width:100%}
+.mark{font-family:var(--stencil);font-size:1.15rem;letter-spacing:.14em;text-decoration:none}
+.tick{display:flex;align-items:center;gap:.6rem;font-size:.72rem;letter-spacing:.14em;color:var(--muted)}
+.tick i{width:6px;height:6px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+.top nav{display:flex;gap:1.6rem}
+.top nav a{text-decoration:none;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);transition:color .2s var(--ease)}
+@media (hover:hover) and (pointer:fine){.top nav a:hover{color:var(--text)}}
+@media (max-width:900px){.top nav{display:none}}
+@media (max-width:520px){.tick span{display:none}}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.6rem;font-family:var(--stencil);font-size:.95rem;letter-spacing:.14em;text-transform:uppercase;
+  padding:.9rem 1.4rem;background:var(--orange);color:#0a0b0c;text-decoration:none;border:1px solid var(--orange);border-radius:var(--radius);
+  transition:transform .18s var(--ease),background .18s var(--ease)}
+.btn:active{transform:scale(.97)}
+.btn.ghost{background:transparent;color:var(--text);border-color:var(--line-2)}
+@media (hover:hover) and (pointer:fine){.btn:hover{background:var(--orange-2)}.btn.ghost:hover{background:rgba(255,255,255,.04)}}
+
+/* hero */
+.hero{position:relative;min-height:min(100dvh,960px);display:grid;align-items:center;overflow:hidden;padding:6rem 0 4rem}
+.hero .bg{position:absolute;inset:-6%;background:url(assets/corridor.jpg) center/cover no-repeat;opacity:.42;will-change:transform;
+  -webkit-mask-image:linear-gradient(180deg,#000 55%,transparent 100%);mask-image:linear-gradient(180deg,#000 55%,transparent 100%)}
+.hero .ghost-n{position:absolute;right:-2vw;top:8%;font-family:var(--stencil);font-size:clamp(14rem,34vw,30rem);line-height:1;color:transparent;
+  -webkit-text-stroke:1px rgba(255,255,255,.13);user-select:none;pointer-events:none;will-change:transform}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:3rem;align-items:center;z-index:2}
+.hero h1{font-size:clamp(2.8rem,7.4vw,6.4rem);will-change:transform}
+.hero h1 .glitch{position:relative;display:inline-block}
+.hero h1 .glitch.on{text-shadow:-2px 0 var(--orange),2px 0 #4ad2ff}
+.hero .sub{margin-top:1.4rem;font-size:1.05rem;color:var(--muted);max-width:46ch}
+.hero .cta{margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap}
+.count{margin-top:2.2rem;display:grid;grid-template-columns:repeat(4,auto);gap:1.4rem;width:max-content}
+.count div{display:grid;gap:.25rem}
+.count b{font-family:var(--stencil);font-weight:400;font-size:clamp(1.9rem,4vw,3rem);line-height:1;color:var(--orange);font-variant-numeric:tabular-nums}
+.count .ended{grid-column:1/-1;font-family:var(--stencil);font-size:1.6rem;color:var(--orange)}
+@media (max-width:900px){
+  .hero{padding:5.5rem 0 3rem}
+  .hero .wrap{grid-template-columns:1fr;gap:2.4rem}
+  .hero .ghost-n{font-size:40vw;top:2%}
+}
+
+/* ration card */
+.cardwrap{perspective:1200px;justify-self:end;width:min(100%,440px)}
+.card{position:relative;aspect-ratio:3/2;background:linear-gradient(160deg,#1a1e22,#0e1012);border:1px solid var(--line-2);border-left:10px solid var(--orange);
+  border-radius:3px;padding:1.2rem 1.3rem;display:grid;grid-template-rows:auto 1fr auto;gap:.6rem;
+  box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.03);
+  transform:rotateX(var(--rx,0)) rotateY(var(--ry,0));transition:transform .5s var(--ease);will-change:transform}
+.card .hd{display:flex;justify-content:space-between;align-items:baseline}
+.card .hd b{font-family:var(--stencil);font-weight:400;font-size:1.35rem;letter-spacing:.16em}
+.card .hd span{font-size:.66rem;letter-spacing:.2em;color:var(--muted)}
+.card .mid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem 1rem;align-content:center}
+.card .f{border-top:1px solid var(--line);padding-top:.35rem}
+.card .f .label{font-size:.6rem}
+.card .f .v{font-family:var(--stencil);font-size:1.15rem;letter-spacing:.1em;margin-top:.15rem}
+.card .f .v.o{font-size:1.15rem}
+.card .bar{display:flex;gap:2px;align-items:flex-end;height:26px}
+.card .bar i{display:block;background:var(--text);opacity:.85;height:100%}
+.card .ft{display:flex;justify-content:space-between;font-size:.6rem;letter-spacing:.18em;color:var(--muted)}
+.card .hole{position:absolute;right:1rem;top:1rem;width:12px;height:12px;border-radius:50%;background:var(--bg);box-shadow:inset 0 1px 2px rgba(0,0,0,.9),0 0 0 1px var(--line-2)}
+.card .sheen{position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.06) 45%,transparent 60%);
+  transform:translateX(var(--sx,-40%));transition:transform .5s var(--ease)}
+@media (max-width:900px){.cardwrap{justify-self:start}}
+
+/* depth gauge */
+.gauge{position:fixed;right:1.5rem;top:50%;transform:translateY(-50%);z-index:20;display:grid;gap:.5rem;justify-items:center;pointer-events:none}
+.gauge .rail{width:1px;height:38vh;background:var(--line-2);position:relative}
+.gauge .rail i{position:absolute;left:-4px;width:9px;height:9px;background:var(--orange);border-radius:50%;top:0;box-shadow:0 0 10px var(--orange);will-change:top}
+.gauge b{font-family:var(--stencil);font-weight:400;font-size:.8rem;letter-spacing:.2em;color:var(--muted);writing-mode:vertical-rl;transform:rotate(180deg)}
+.gauge .lvl{font-family:var(--stencil);font-size:1rem;letter-spacing:.12em;color:var(--text);font-variant-numeric:tabular-nums}
+@media (max-width:1100px){.gauge{display:none}}
+
+/* sections */
+section{position:relative;padding:6.5rem 0;border-top:1px solid var(--line)}
+section .wrap>.label{margin-bottom:1rem}
+section h2{font-size:clamp(2rem,4.6vw,3.6rem);margin-bottom:2rem}
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .9s var(--ease),transform .9s var(--ease)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+/* transmission */
+.term{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:1.4rem 1.6rem;max-width:860px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5);position:relative;overflow:hidden}
+.term::before{content:"";position:absolute;left:0;right:0;top:0;height:1px;background:linear-gradient(90deg,var(--orange),transparent 60%)}
+.term .bar-h{display:flex;justify-content:space-between;font-size:.66rem;letter-spacing:.2em;color:var(--muted);margin-bottom:1rem}
+.term pre{margin:0;font-family:var(--mono);font-size:.92rem;line-height:1.75;white-space:pre-wrap;min-height:11.5em;color:#c9cdd2}
+.term pre .o{color:var(--orange)}
+.term .cur{display:inline-block;width:.6em;height:1.05em;background:var(--orange);vertical-align:-2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.term-note{margin-top:1.4rem;color:var(--muted);max-width:60ch}
+
+/* dossier */
+.files{border-top:1px solid var(--line)}
+.file{position:relative;display:grid;grid-template-columns:8rem 1fr;gap:2rem;padding:2.2rem 0;border-bottom:1px solid var(--line);overflow:hidden;isolation:isolate}
+.file .pic{position:absolute;inset:0;z-index:-1;background-size:cover;background-position:center;opacity:0;transform:scale(1.06);
+  transition:opacity .6s var(--ease),transform 1.2s var(--ease);-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 40%);mask-image:linear-gradient(90deg,transparent 0,#000 40%)}
+.file .no{font-family:var(--stencil);font-size:.8rem;letter-spacing:.2em;color:var(--muted);padding-top:.4rem}
+.file h3{font-size:clamp(1.5rem,3vw,2.2rem);margin-bottom:.6rem;transition:transform .5s var(--ease)}
+.file p{max-width:62ch;color:var(--muted)}
+@media (hover:hover) and (pointer:fine){
+  .file:hover .pic{opacity:.28;transform:scale(1)}
+  .file:hover h3{transform:translateX(8px)}
+  .file:hover p{color:var(--text)}
+}
+@media (hover:none){.file .pic{opacity:.14;transform:none}}
+@media (max-width:640px){.file{grid-template-columns:1fr;gap:.6rem}}
+
+/* levels */
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
+@media (max-width:900px){.levels{grid-template-columns:1fr}}
+.finder{display:grid;gap:.8rem;max-width:520px}
+.finder .row{display:flex;gap:.6rem}
+.finder input{flex:1;min-width:0;background:var(--bg-2);border:1px solid var(--line-2);color:var(--text);font-family:var(--mono);font-size:.9rem;padding:.85rem 1rem;border-radius:var(--radius);outline:none;
+  transition:border-color .2s var(--ease)}
+.finder input:focus{border-color:var(--orange)}
+.finder button{font-family:var(--stencil);letter-spacing:.14em;text-transform:uppercase;background:var(--orange);color:#0a0b0c;border:1px solid var(--orange);padding:0 1.2rem;border-radius:var(--radius);
+  transition:transform .18s var(--ease),background .18s var(--ease)}
+.finder button:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.finder button:hover{background:var(--orange-2)}}
+.assign{margin-top:1.6rem;border-top:1px solid var(--line);padding-top:1.2rem;min-height:9rem}
+.assign .big{font-family:var(--stencil);font-size:clamp(3.4rem,8vw,6rem);line-height:1;color:var(--orange);font-variant-numeric:tabular-nums}
+.assign .big small{font-size:.35em;color:var(--muted);letter-spacing:.2em;margin-right:.5rem}
+.assign .meta{margin-top:.8rem;display:grid;gap:.25rem;color:var(--muted)}
+.assign .meta b{font-weight:500;color:var(--text)}
+.grid144{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;width:min(100%,420px);justify-self:end}
+.grid144 i{display:block;aspect-ratio:1;background:var(--line);border-radius:1px;transition:background .4s var(--ease),transform .4s var(--ease);will-change:transform}
+.grid144 i.hot{background:var(--orange);box-shadow:0 0 12px var(--orange);transform:scale(1.25)}
+.grid144 i.warm{background:var(--line-2)}
+@media (max-width:900px){.grid144{justify-self:start;width:min(100%,340px)}}
+
+/* rations */
+.terms{margin:0;border-top:1px solid var(--line);max-width:900px}
+.terms>div{display:grid;grid-template-columns:12rem 1fr;gap:1.2rem;padding:1rem 0;border-bottom:1px solid var(--line)}
+.terms dt{font-family:var(--stencil);letter-spacing:.14em;font-size:.85rem;color:var(--muted);padding-top:.15rem}
+.terms dd{margin:0}
+.terms dd .m{font-size:.9rem;color:var(--muted);margin-top:.2rem}
+.mono{word-break:break-all}
+@media (max-width:600px){.terms>div{grid-template-columns:1fr;gap:.25rem}}
+
+/* calendar */
+.cal{position:relative;padding-left:2rem;max-width:760px}
+.cal::before{content:"";position:absolute;left:5px;top:0;bottom:0;width:1px;background:var(--line-2)}
+.cal .fill{position:absolute;left:5px;top:0;width:1px;background:var(--orange);height:var(--fill,0);box-shadow:0 0 8px var(--orange);transition:height 1.4s var(--ease)}
+.ev{position:relative;padding:0 0 2.2rem 0}
+.ev::before{content:"";position:absolute;left:calc(-2rem + 1px);top:.45rem;width:9px;height:9px;border-radius:50%;background:var(--bg);border:1px solid var(--line-2)}
+.ev.live::before{background:var(--orange);border-color:var(--orange);box-shadow:0 0 10px var(--orange)}
+.ev .when{font-family:var(--stencil);letter-spacing:.16em;font-size:.85rem;color:var(--muted)}
+.ev h3{font-size:1.5rem;margin:.3rem 0 .4rem}
+.ev p{color:var(--muted);max-width:56ch}
+.door{margin-top:3.5rem;position:relative;aspect-ratio:16/7;border:1px solid var(--line);overflow:hidden;border-radius:var(--radius)}
+.door img{width:100%;height:100%;object-fit:cover;opacity:.75;transform:scale(1.04);will-change:transform}
+.door .cap{position:absolute;left:1.2rem;bottom:1rem;font-size:.7rem;letter-spacing:.2em;color:var(--muted)}
+
+/* footer */
+footer{position:relative;z-index:2;border-top:1px solid var(--line);padding:3rem 0 4rem;color:var(--muted);font-size:.85rem}
+footer .row{display:flex;flex-wrap:wrap;gap:1rem 2rem;margin-bottom:1.4rem}
+footer .row a{color:var(--text);text-decoration:none;font-size:.74rem;letter-spacing:.16em;text-transform:uppercase}
+footer p{max-width:70ch}
+</style>
+</head>
+<body>
+
+<canvas id="dust" aria-hidden="true"></canvas>
+<div class="scan" aria-hidden="true"></div>
+<div class="vig" aria-hidden="true"></div>
+<div class="ring" id="ring" aria-hidden="true"></div>
+
+<div class="top">
+  <div class="wrap">
+    <a class="mark" href="#top">RATION</a>
+    <nav aria-label="Site">
+      <a href="#transmission">Transmission</a>
+      <a href="#layer">The Layer</a>
+      <a href="#levels">Levels</a>
+      <a href="#rations">Rations</a>
+      <a href="#calendar">Calendar</a>
+    </nav>
+    <div class="tick"><i></i><span>Tick</span> <b id="tick">0000000000</b></div>
+  </div>
+</div>
+
+<div class="gauge" aria-hidden="true">
+  <b>Depth</b>
+  <div class="rail"><i id="gdot"></i></div>
+  <div class="lvl" id="glvl">LEVEL 001</div>
+</div>
+
+<main>
+
+<header class="hero" id="top">
+  <div class="bg" data-depth="14"></div>
+  <div class="ghost-n" data-depth="-30">144</div>
+  <div class="wrap">
+    <div>
+      <p class="label">Clerk Process 7 &middot; archive mode</p>
+      <h1 data-depth="8"><span class="glitch" id="glitch">The rations end on the 29th.</span></h1>
+      <p class="sub">Nobody in the Layer has seen the Surface. The free gas expires on the 29th of September. Nobody knows what happens after.</p>
+      <div class="count" id="count" aria-live="polite">
+        <div><b id="cd">00</b><span class="label">Days</span></div>
+        <div><b id="ch">00</b><span class="label">Hours</span></div>
+        <div><b id="cm">00</b><span class="label">Min</span></div>
+        <div><b id="cs">00</b><span class="label">Sec</span></div>
+      </div>
+      <div class="cta">
+        <a class="btn" href="https://www.ponsfamily.com/launchpad" rel="noopener">Buy on Pons</a>
+        <a class="btn ghost" href="#levels">Find your level</a>
+      </div>
+    </div>
+    <div class="cardwrap" data-depth="-16">
+      <div class="card" id="card">
+        <div class="hole"></div>
+        <div class="hd"><b>RATION CARD</b><span>SERIES A</span></div>
+        <div class="mid">
+          <div class="f"><div class="label">Resident</div><div class="v" id="c-res">UNASSIGNED</div></div>
+          <div class="f"><div class="label">Level</div><div class="v o" id="c-lvl">___</div></div>
+          <div class="f"><div class="label">Ration class</div><div class="v" id="c-cls">PENDING</div></div>
+          <div class="f"><div class="label">Airlock</div><div class="v">NONE</div></div>
+        </div>
+        <div class="bar" id="bar" aria-hidden="true"></div>
+        <div class="ft"><span>ISSUED BY THE SEQUENCER</span><span>VOID ON THE SURFACE</span></div>
+        <div class="sheen"></div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="transmission">
+  <div class="wrap">
+    <p class="label reveal">Transmission</p>
+    <h2 class="reveal">Not ordered by the Sequencer</h2>
+    <div class="term reveal" id="term">
+      <div class="bar-h"><span>CLERK PROCESS 7</span><span>ARCHIVE &middot; LEVEL 144</span></div>
+      <pre id="tty"></pre>
+    </div>
+    <p class="term-note reveal">The Clerk is a process. It reads the Layer and writes what it sees, once a day and once a week. It cannot buy, sell, open an airlock, or lie about a number that is on-chain.</p>
+  </div>
+</section>
+
+<section id="layer">
+  <div class="wrap">
+    <p class="label reveal">Dossier</p>
+    <h2 class="reveal">The Layer</h2>
+    <div class="files">
+      <article class="file reveal">
+        <div class="pic" style="background-image:url(assets/shaft.jpg)"></div>
+        <div class="no">FILE 01</div>
+        <div><h3>The Layer</h3><p>A sealed settlement of one hundred and forty-four levels. Population: see census. Air: recycled. Time: measured in ticks of one hundred milliseconds. Nobody remembers being brought here.</p></div>
+      </article>
+      <article class="file reveal">
+        <div class="pic" style="background-image:url(assets/corridor.jpg)"></div>
+        <div class="no">FILE 02</div>
+        <div><h3>The Sequencer</h3><p>Orders every event in the Layer. What it does not order did not happen. Operated by the Company. The Company is not named in these files.</p></div>
+      </article>
+      <article class="file reveal">
+        <div class="pic" style="background-image:url(assets/shaft.jpg);background-position:top"></div>
+        <div class="no">FILE 03</div>
+        <div><h3>The Surface</h3><p>The place above. Gas costs a fortune, the air is thin, and residents who go up do not come back. Officially a rumour. Unofficially, the airlocks were built for something.</p></div>
+      </article>
+      <article class="file reveal">
+        <div class="pic" style="background-image:url(assets/airlock.jpg)"></div>
+        <div class="no">FILE 04</div>
+        <div><h3>The Airlocks</h3><p>Four known: Across, Relay, Stargate, and the old canonical door. Passage is one way in practice. The Clerk records every departure. It has never recorded a return.</p></div>
+      </article>
+      <article class="file reveal">
+        <div class="pic" style="background-image:url(assets/corridor.jpg);background-position:bottom"></div>
+        <div class="no">FILE 05</div>
+        <div><h3>The Rations</h3><p>Issued daily to residents from the levy on every trade. Free gas until the 29th. After that, the Clerk's records stop being polite.</p></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="levels">
+  <div class="wrap">
+    <p class="label reveal">Assignment</p>
+    <h2 class="reveal">Find your level</h2>
+    <div class="levels">
+      <div class="reveal">
+        <p style="color:var(--muted);max-width:52ch;margin-bottom:1.4rem">Every resident is assigned a level from the hash of their wallet. It is deterministic. The Clerk cannot change it, and neither can you.</p>
+        <form class="finder" id="finder" autocomplete="off">
+          <div class="row">
+            <input id="addr" type="text" inputmode="text" spellcheck="false" placeholder="0x wallet address" aria-label="Wallet address">
+            <button type="submit">Assign</button>
+          </div>
+          <p class="label" id="fmsg">Any EVM address. Nothing is sent anywhere.</p>
+        </form>
+        <div class="assign" id="assign" aria-live="polite">
+          <div class="big"><small>LEVEL</small><span id="lv">___</span></div>
+          <div class="meta" id="lmeta"></div>
+        </div>
+      </div>
+      <div class="grid144 reveal" id="grid" aria-hidden="true"></div>
+    </div>
+  </div>
+</section>
+
+<section id="rations">
+  <div class="wrap">
+    <p class="label reveal">Terms</p>
+    <h2 class="reveal">Rations</h2>
+    <dl class="terms reveal">
+      <div><dt>Supply</dt><dd>1,000,000,000 RATION<div class="m">Fixed. The Clerk holds none.</div></dd></div>
+      <div><dt>The levy</dt><dd>1% on every trade, taken by the pool<div class="m">10% of the levy, the maximum Pons allows, is set aside for residents.</div></dd></div>
+      <div><dt>Issue</dt><dd>Residents claim their rations from their Pons profile, pro rata, whenever they like<div class="m">The daily bulletin lists the totals.</div></dd></div>
+      <div><dt>Level Two</dt><dd>Once the curve raises 4.2 ETH, liquidity locks and the door opens<div class="m">Graduation, in the Company's language.</div></dd></div>
+      <div><dt>Origin</dt><dd>No presale. No allocation. No airdrop.<div class="m">The dev wallet buys at the gate like everyone else and is disclosed in the first transmission. A 99% snipe tax applies in the first second.</div></dd></div>
+      <div><dt>Venue</dt><dd>Pons V2 on Robinhood Chain, paired with ETH</dd></div>
+      <div><dt>Contract</dt><dd class="mono" id="ca">Pending. Posted at launch.</dd></div>
+    </dl>
+  </div>
+</section>
+
+<section id="calendar">
+  <div class="wrap">
+    <p class="label reveal">Act one</p>
+    <h2 class="reveal">Calendar</h2>
+    <div class="cal reveal" id="cal">
+      <div class="fill"></div>
+      <div class="ev live"><div class="when">NOW</div><h3>The count begins</h3><p>Ticks are running. The census opens at launch.</p></div>
+      <div class="ev"><div class="when">LAUNCH &middot; DATE TO BE ANNOUNCED</div><h3>Chapter 1: Arrival</h3><p>The first residents are assigned levels. The Clerk begins the bulletin.</p></div>
+      <div class="ev"><div class="when">CENSUS 500</div><h3>Chapter 2: The Count</h3><p>Unlocks when five hundred residents hold. If the census falls, the Clerk has nothing to report.</p></div>
+      <div class="ev"><div class="when">CENSUS 1,000</div><h3>Chapter 3: The Noise in the Pipes</h3><p>Something on Level 144 is not on the Sequencer's schedule.</p></div>
+      <div class="ev"><div class="when">LEVEL TWO &middot; 4.2 ETH</div><h3>Chapter 4: The Door</h3><p>Liquidity locks. The airlock to Level Two opens. What is behind it is decided by vote.</p></div>
+      <div class="ev"><div class="when">29 SEPTEMBER</div><h3>The rations end</h3><p>The free gas expires. Act one closes. The Clerk has no file for what comes after, and it is not going to pretend.</p></div>
+    </div>
+    <div class="door reveal"><img src="assets/airlock.jpg" alt="A sealed circular steel airlock door in a concrete wall, a line of orange light at its edge" data-depth="10"><div class="cap">FILE 04 &middot; AIRLOCK, CANONICAL</div></div>
+    <p class="term-note reveal" style="margin-top:1.6rem">Chapters post on X as threads. Residents vote on what the Clerk does next. Real wallets appear as residents, by level and by the first six characters of their address. Buying writes you in. Selling writes you out.</p>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <a href="https://www.ponsfamily.com/launchpad" rel="noopener">Pons</a>
+      <a href="https://x.com/ClerkProcess7" rel="noopener">X</a>
+      <a href="https://dexscreener.com/robinhood" rel="noopener">Chart</a>
+      <a href="https://robinhoodchain.blockscout.com/" rel="noopener">Explorer</a>
+    </div>
+    <p>A meme token with a story. The story is fiction. The numbers are not. Not affiliated with Robinhood Markets, Pons, or any Company. The Clerk is software. Nothing here is advice, and nothing here knows what happens on the 30th.</p>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+  const $ = s => document.querySelector(s);
+
+  /* ---- dust canvas + level lines ---- */
+  const cv = $('#dust'), cx = cv.getContext('2d');
+  let W, H, dpr, parts = [];
+  function size(){ dpr = Math.min(devicePixelRatio||1, 2); W = innerWidth; H = innerHeight; cv.width = W*dpr; cv.height = H*dpr; cx.setTransform(dpr,0,0,dpr,0,0); }
+  function seed(){ parts = []; const n = Math.round(Math.min(160, W*H/9000)); for (let i=0;i<n;i++) parts.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.4+.3, v:Math.random()*.35+.08, a:Math.random()*.5+.15, w:Math.random()*Math.PI*2}); }
+  size(); seed(); addEventListener('resize', () => { size(); seed(); });
+
+  /* ---- pointer ---- */
+  let tx=0, ty=0, mx=0, my=0, px=W/2, py=H/2, rx=W/2, ry=H/2;
+  addEventListener('pointermove', e => { px=e.clientX; py=e.clientY; tx=(e.clientX/W-.5)*2; ty=(e.clientY/H-.5)*2; }, {passive:true});
+  const layers = [...document.querySelectorAll('[data-depth]')];
+  const ring = $('#ring');
+  if (fine && !reduce) { document.body.classList.add('has-ring'); ring.style.opacity=1; document.addEventListener('mouseleave', ()=>ring.style.opacity=0); document.addEventListener('mouseenter', ()=>ring.style.opacity=1);
+    document.addEventListener('pointerover', e => { ring.classList.toggle('big', !!e.target.closest('a,button,input,.card')); }); }
+
+  let scrollY0 = 0;
+  function frame(t){
+    mx += (tx-mx)*.06; my += (ty-my)*.06;
+    if (!reduce) {
+      for (const el of layers) { const d = +el.dataset.depth; el.style.transform = `translate3d(${(mx*d).toFixed(2)}px, ${(my*d*.6).toFixed(2)}px, 0)`; }
+      rx += (px-rx)*.18; ry += (py-ry)*.18; ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+    }
+    cx.clearRect(0,0,W,H);
+    cx.strokeStyle = 'rgba(255,255,255,.035)'; cx.lineWidth = 1;
+    const off = ((scrollY0*.25) + my*18) % 56;
+    for (let y=-off; y<H; y+=56) { cx.beginPath(); cx.moveTo(0,y+.5); cx.lineTo(W,y+.5); cx.stroke(); }
+    for (const p of parts) {
+      if (!reduce) { p.y -= p.v; p.x += Math.sin(t/1400 + p.w)*.15 + mx*.25; if (p.y < -4) { p.y = H+4; p.x = Math.random()*W; } if (p.x<-4) p.x=W+4; if (p.x>W+4) p.x=-4; }
+      cx.fillStyle = `rgba(255,${180+Math.round(p.a*40)},${140},${p.a*.55})`; cx.beginPath(); cx.arc(p.x,p.y,p.r,0,Math.PI*2); cx.fill();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+
+  /* ---- tick counter (100 ms) ---- */
+  const tick = $('#tick'); let n = 0;
+  setInterval(() => { n++; tick.textContent = String(n).padStart(10,'0'); }, 100);
+
+  /* ---- countdown to the 29th ---- */
+  const END = Date.UTC(2026, 8, 29, 0, 0, 0);
+  const cd=$('#cd'), ch=$('#ch'), cm=$('#cm'), cs=$('#cs'), count=$('#count');
+  function tickDown(){
+    let ms = END - Date.now();
+    if (ms <= 0) { count.innerHTML = '<div class="ended">The rations have ended.</div>'; return; }
+    const d=Math.floor(ms/864e5); ms-=d*864e5; const h=Math.floor(ms/36e5); ms-=h*36e5; const m=Math.floor(ms/6e4); ms-=m*6e4; const s=Math.floor(ms/1e3);
+    cd.textContent=String(d).padStart(2,'0'); ch.textContent=String(h).padStart(2,'0'); cm.textContent=String(m).padStart(2,'0'); cs.textContent=String(s).padStart(2,'0');
+    setTimeout(tickDown, 1000 - (Date.now()%1000));
+  }
+  tickDown();
+
+  /* ---- glitch flicker ---- */
+  const g = $('#glitch');
+  if (!reduce) setInterval(() => { g.classList.add('on'); setTimeout(()=>g.classList.remove('on'), 90+Math.random()*90); }, 6500);
+
+  /* ---- depth gauge ---- */
+  const gdot=$('#gdot'), glvl=$('#glvl');
+  function onScroll(){
+    scrollY0 = scrollY;
+    const max = document.documentElement.scrollHeight - innerHeight;
+    const f = max>0 ? Math.min(1, Math.max(0, scrollY/max)) : 0;
+    gdot.style.top = `calc(${(f*100).toFixed(2)}% - 4px)`;
+    glvl.textContent = 'LEVEL ' + String(1+Math.round(f*143)).padStart(3,'0');
+    const cal = $('#cal'); if (cal) { const r = cal.getBoundingClientRect(); const ff = Math.min(1, Math.max(0, (innerHeight*.75 - r.top)/r.height)); cal.style.setProperty('--fill', (ff*100).toFixed(1)+'%'); }
+  }
+  addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  /* ---- reveal ---- */
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ---- typewriter ---- */
+  const lines = [
+    ['> SEQUENCER TICK ', '0000000000', ' . CLERK PROCESS 7 . ARCHIVE MODE'],
+    ['> CENSUS ............ ', 'opens at launch'],
+    ['> RATIONS ........... ', 'issued daily at 00:00 UTC once the Layer is populated'],
+    ['> DEPARTURES ........ ', 'none recorded'],
+    ['> SURFACE ........... ', 'unconfirmed'],
+    ['> FREE GAS .......... ', 'ends on the 29th'],
+    ['> NOTE: this transmission was not ordered by the Sequencer.']
+  ];
+  const tty = $('#tty'); let typed = false;
+  function render(upTo, partial){
+    let html = '';
+    for (let i=0;i<=upTo && i<lines.length;i++){
+      const L = lines[i]; const full = L.join('');
+      const txt = (i===upTo) ? full.slice(0, partial) : full;
+      const pre = L[0]; const rest = txt.slice(pre.length);
+      html += (txt.length<=pre.length ? txt : pre + '<span class="o">' + rest + '</span>') + (i<upTo ? '\n' : '');
+    }
+    tty.innerHTML = html + '<span class="cur"></span>';
+  }
+  function type(){
+    if (typed) return; typed = true;
+    if (reduce) { render(lines.length-1, 1e4); return; }
+    let i=0, c=0;
+    (function step(){
+      const full = lines[i].join('');
+      c += 1 + (Math.random()<.15?1:0);
+      render(i, c);
+      if (c >= full.length) { i++; c=0; if (i>=lines.length) { render(lines.length-1, 1e4); return; } setTimeout(step, 260); }
+      else setTimeout(step, 14 + Math.random()*22);
+    })();
+  }
+  new IntersectionObserver(es => { if (es.some(e=>e.isIntersecting)) type(); }, {threshold:.3}).observe($('#term'));
+
+  /* ---- card tilt + barcode ---- */
+  const card = $('#card'), bar = $('#bar');
+  (function barcode(){ let s = 1337; for (let i=0;i<46;i++){ s = (s*48271)%2147483647; const w = 1 + (s%3); const gap = (s>>3)%2 ? 2 : 1; const el = document.createElement('i'); el.style.width = w+'px'; el.style.marginRight = gap+'px'; if ((s>>5)%5===0) el.style.height='60%'; bar.appendChild(el); } })();
+  if (fine && !reduce) {
+    card.addEventListener('pointermove', e => { const r = card.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      card.style.setProperty('--ry', (x*14)+'deg'); card.style.setProperty('--rx', (-y*12)+'deg'); card.style.setProperty('--sx', (x*120)+'%'); });
+    card.addEventListener('pointerleave', () => { card.style.setProperty('--ry','0deg'); card.style.setProperty('--rx','0deg'); card.style.setProperty('--sx','-40%'); });
+  }
+
+  /* ---- 144 grid ---- */
+  const grid = $('#grid'); for (let i=0;i<144;i++){ const el=document.createElement('i'); el.dataset.n=i+1; grid.appendChild(el); }
+
+  /* ---- level finder ---- */
+  const finder=$('#finder'), addr=$('#addr'), fmsg=$('#fmsg'), lv=$('#lv'), lmeta=$('#lmeta');
+  const cres=$('#c-res'), clvl=$('#c-lvl'), ccls=$('#c-cls');
+  async function levelOf(a){
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(a.toLowerCase()));
+    const b = new Uint8Array(buf); return ((b[0]<<8|b[1]) % 144) + 1;
+  }
+  function band(l){ return l<=24 ? ['UPPER LEVELS','REDUCED','Closer to the Surface, and they know it.'] : l<=120 ? ['THE MIDS','STANDARD','Nothing to report. That is the report.'] : ['DOWN DEEP','DOUBLE','Nobody asks why.']; }
+  function roll(target){
+    if (reduce) { lv.textContent = String(target).padStart(3,'0'); return; }
+    const t0 = performance.now(), dur = 900;
+    setTimeout(() => { lv.textContent = String(target).padStart(3,'0'); lv.style.opacity = 1; }, dur + 80);
+    (function f(t){ const k = Math.min(1,(t-t0)/dur); const e = 1-Math.pow(1-k,3); const v = k<1 ? Math.round(Math.random()*143+1) : target; lv.textContent = String(k<1?v:target).padStart(3,'0'); lv.style.opacity = .55+.45*e; if (k<1) requestAnimationFrame(f); })(t0);
+  }
+  finder.addEventListener('submit', async e => {
+    e.preventDefault();
+    const a = addr.value.trim();
+    if (!/^0x[0-9a-fA-F]{40}$/.test(a)) { fmsg.textContent = 'That is not an address. The Clerk does not guess.'; fmsg.classList.add('o'); return; }
+    fmsg.classList.remove('o'); fmsg.textContent = 'Assignment on record.';
+    const l = await levelOf(a); const [where, cls, note] = band(l);
+    roll(l);
+    lmeta.innerHTML = `<div><b>${where}</b></div><div>Ration class: <b>${cls}</b></div><div>Airlock clearance: <b>NONE</b></div><div>${note}</div><div>${a.slice(0,6)}&hellip;${a.slice(-4)}</div>`;
+    grid.querySelectorAll('i').forEach(el => { el.classList.remove('hot','warm'); const n=+el.dataset.n; if (n===l) el.classList.add('hot'); else if (Math.abs(n-l)<=12) el.classList.add('warm'); });
+    cres.textContent = a.slice(2,8).toUpperCase(); clvl.textContent = String(l).padStart(3,'0'); ccls.textContent = cls;
+  });
+})();
+</script>
+</body>
+</html>
