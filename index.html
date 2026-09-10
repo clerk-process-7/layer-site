@@ -246,6 +246,7 @@ footer p{max-width:70ch}
       <a href="#transmission">Transmission</a>
       <a href="#layer">The Layer</a>
       <a href="#levels">Levels</a>
+      <a href="/shaft">The Shaft</a>
       <a href="#rations">Rations</a>
       <a href="#calendar">Calendar</a>
     </nav>
@@ -355,7 +356,7 @@ footer p{max-width:70ch}
     <h2 class="reveal">Find your level</h2>
     <div class="levels">
       <div class="reveal">
-        <p style="color:var(--muted);max-width:52ch;margin-bottom:1.4rem">Every resident is assigned a level from the hash of their wallet. It is deterministic. The Clerk cannot change it, and neither can you.</p>
+        <p style="color:var(--muted);max-width:52ch;margin-bottom:1.4rem">Every resident is assigned a level from the hash of their wallet. It is deterministic. The Clerk cannot change it, and neither can you. Every level has a door. <a href="/shaft">The Shaft</a> goes down to it.</p>
         <form class="finder" id="finder" autocomplete="off">
           <div class="row">
             <input id="addr" type="text" inputmode="text" spellcheck="false" placeholder="0x wallet address" aria-label="Wallet address">
@@ -582,7 +583,7 @@ footer p{max-width:70ch}
     const l = await levelOf(a); const [where, cls, note] = band(l);
     roll(l);
     const extra = sealed[l] ? `<div class="o">${sealed[l]}</div>` : '';
-    lmeta.innerHTML = `<div><b>${where}</b></div><div>Ration class: <b>${cls}</b></div><div>Airlock clearance: <b>NONE</b></div><div>${note}</div>${extra}<div>${a.slice(0,6)}&hellip;${a.slice(-4)}</div>`;
+    lmeta.innerHTML = `<div><b>${where}</b></div><div>Ration class: <b>${cls}</b></div><div>Airlock clearance: <b>NONE</b></div><div>${note}</div>${extra}<div>${a.slice(0,6)}&hellip;${a.slice(-4)}</div><div style="margin-top:.8rem"><a class="btn ghost" href="/shaft?addr=${a}">Descend to your door</a></div>`;
     grid.querySelectorAll('i').forEach(el => { el.classList.remove('hot','warm'); const n=+el.dataset.n; if (n===l) el.classList.add('hot'); else if (Math.abs(n-l)<=12) el.classList.add('warm'); });
     cres.textContent = a.slice(2,8).toUpperCase(); clvl.textContent = String(l).padStart(3,'0'); ccls.textContent = cls;
   });

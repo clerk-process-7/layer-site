@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Shaft · RATION</title>
+<meta name="description" content="One hundred and forty-four levels. Every resident has a door. Find yours. Written by the Clerk, an AI process, on Robinhood Chain.">
+<meta property="og:title" content="The Shaft · RATION">
+<meta property="og:description" content="One hundred and forty-four levels. Every resident has a door. Find yours.">
+<meta property="og:image" content="https://ration-layer.pages.dev/assets/og-shaft.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@ClerkProcess7">
+<link rel="canonical" href="https://ration-layer.pages.dev/shaft">
+<meta name="theme-color" content="#0a0b0c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Allerta+Stencil&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="modulepreload" href="assets/vendor/three.module.min.js">
+<style>
+:root{
+  --bg:#0a0b0c; --bg-2:#0f1113; --panel:#14171a; --line:#262a2f; --line-2:#33383e;
+  --text:#d6d9dd; --muted:#8a9098; --orange:#ff6a1a; --orange-2:#ff8a4a;
+  --stencil:"Allerta Stencil",Impact,"Arial Narrow",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --ease:cubic-bezier(.23,1,.32,1); --radius:2px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:15px;line-height:1.6;overflow:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+#gl{position:fixed;inset:0;display:block;touch-action:none;opacity:0;transition:opacity 1.2s var(--ease)}
+#gl.on{opacity:1}
+.scan{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.07;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.9) 2px 3px)}
+.vig{position:fixed;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,transparent 40%,rgba(0,0,0,.7) 100%)}
+
+.hud{position:fixed;inset:0;z-index:2;pointer-events:none}
+.hud>div{position:absolute}
+.label{font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.st{font-family:var(--stencil);font-weight:400;text-transform:uppercase;letter-spacing:.06em;line-height:1}
+.o{color:var(--orange)}
+.tl{left:1.5rem;top:1.25rem}
+.mark{font-family:var(--stencil);font-size:1.15rem;letter-spacing:.14em;text-decoration:none;pointer-events:auto}
+.tl .label{margin-top:.3rem}
+.tr{right:1.5rem;top:1.25rem;text-align:right;display:grid;gap:.25rem;justify-items:end}
+.tr b{font-family:var(--stencil);font-weight:400;font-size:1rem;letter-spacing:.1em;color:var(--orange);font-variant-numeric:tabular-nums}
+.tick i{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);margin-right:.5rem;vertical-align:1px;animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.35}50%{opacity:1}}
+
+.depth{left:1.5rem;top:50%;transform:translateY(-50%);display:grid;gap:.5rem}
+.depth .big{font-size:clamp(2.6rem,6vw,4.4rem);font-variant-numeric:tabular-nums}
+.depth .big small{display:block;font-size:.32em;color:var(--muted);letter-spacing:.22em;margin-bottom:.35rem}
+.depth .band{font-size:.9rem;letter-spacing:.16em;color:var(--muted)}
+.depth .rail{width:1px;height:26vh;background:var(--line-2);position:relative;margin-top:.4rem}
+.depth .rail i{position:absolute;left:-4px;width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 10px var(--orange);top:0}
+
+.bl{left:1.5rem;bottom:1.5rem;max-width:min(460px,calc(100vw - 3rem))}
+.plate{border-top:1px solid var(--line-2);padding-top:.8rem;display:none;gap:.3rem;color:var(--muted)}
+.plate.in{display:grid;animation:rise .7s var(--ease)}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+.plate b{color:var(--text);font-weight:500}
+.plate .h{font-family:var(--stencil);font-size:1.3rem;letter-spacing:.12em;color:var(--text);margin-bottom:.2rem;text-transform:uppercase}
+.plate .row{margin-top:.6rem;pointer-events:auto}
+.btn{display:inline-flex;align-items:center;font-family:var(--stencil);font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;padding:.6rem 1rem;
+  background:transparent;color:var(--text);border:1px solid var(--line-2);border-radius:var(--radius);cursor:pointer;text-decoration:none;
+  transition:transform .18s var(--ease),background .18s var(--ease)}
+.btn:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.btn:hover{background:rgba(255,255,255,.04)}}
+.hint{font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:.9rem}
+
+.br{right:1.5rem;bottom:1.5rem;width:min(380px,calc(100vw - 3rem));pointer-events:auto}
+.finder{display:grid;gap:.6rem}
+.finder .row{display:flex;gap:.5rem}
+.finder input{flex:1;min-width:0;background:rgba(15,17,19,.85);border:1px solid var(--line-2);color:var(--text);font-family:var(--mono);font-size:.85rem;padding:.75rem .9rem;border-radius:var(--radius);outline:none;transition:border-color .2s var(--ease)}
+.finder input:focus{border-color:var(--orange)}
+.finder button{font-family:var(--stencil);letter-spacing:.14em;text-transform:uppercase;background:var(--orange);color:#0a0b0c;border:1px solid var(--orange);padding:0 1.1rem;border-radius:var(--radius);cursor:pointer;transition:transform .18s var(--ease),background .18s var(--ease)}
+.finder button:active{transform:scale(.97)}
+@media (hover:hover) and (pointer:fine){.finder button:hover{background:var(--orange-2)}}
+
+.nogl{position:fixed;inset:0;z-index:1;display:none;place-items:center;text-align:center;padding:2rem;color:var(--muted)}
+.nogl.on{display:grid}
+.nogl p{max-width:44ch;margin:0}
+
+@media (max-width:700px){
+  .tick{display:none}
+  .depth{top:4.4rem;left:1.5rem;transform:none;grid-auto-flow:column;align-items:baseline;gap:.7rem}
+  .depth .big{font-size:1.7rem}.depth .big small{display:inline;margin:0 .4rem 0 0;font-size:.45em}.depth .rail{display:none}
+  .br{top:auto;bottom:max(1.5rem,env(safe-area-inset-bottom));left:1.5rem;right:1.5rem;width:auto}
+  .bl{bottom:8.8rem;left:1.5rem;right:1.5rem;max-width:none}
+  .plate{font-size:.88rem;gap:.15rem}.plate .h{font-size:1.15rem}
+}
+body.og .br,body.og .hint{display:none}
+@media (prefers-reduced-motion:reduce){.tick i{animation:none}.plate.in{animation:none}#gl{transition:none}}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-hidden="true"></canvas>
+<div class="scan" aria-hidden="true"></div>
+<div class="vig" aria-hidden="true"></div>
+<div class="nogl" id="nogl"><p>This device cannot render the shaft. The levels are still there. Your assignment still stands.</p></div>
+
+<div class="hud">
+  <div class="tl"><a class="mark" href="/">RATION</a><div class="label">The Shaft · Clerk Process 7</div></div>
+  <div class="tr">
+    <div class="tick label"><i></i>Tick <b id="tick">0000000000</b></div>
+    <div class="label">Seal integrity <b id="seal">100.0000%</b></div>
+  </div>
+  <div class="depth" aria-live="polite">
+    <div class="st big"><small>Depth</small><span id="lvl">001</span></div>
+    <div class="st band" id="band">Upper levels</div>
+    <div class="rail" aria-hidden="true"><i id="dot"></i></div>
+  </div>
+  <div class="bl">
+    <div class="plate" id="plate" aria-live="polite"></div>
+    <div class="hint" id="hint">Scroll to descend. Drag to look.</div>
+  </div>
+  <div class="br">
+    <form class="finder" id="finder" autocomplete="off">
+      <div class="row"><input id="addr" type="text" inputmode="text" spellcheck="false" placeholder="0x wallet address" aria-label="Wallet address"><button type="submit">Find my door</button></div>
+      <p class="label" id="fmsg">Every resident has a door. Nothing is sent anywhere.</p>
+    </form>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from './assets/vendor/three.module.min.js';
+
+const LV = 144, H = 3.2, R = 5.6;
+const yOf = l => -(l - 1) * H;
+const SEALED = {4:'Process 4 filed its last entry from this level. The file is missing. The level is not.', 7:'This level belongs to a process. You should not be able to stand here.', 144:'The noise is loudest here. A file for this level exists and is sealed until the seal reads zero.', 29:'Twenty-nine. The Clerk has stopped assigning meaning to that number. It keeps coming up.', 63:'Order 4663 was signed on this level. The signature is redacted. The ink is not.'};
+const band = l => l<=24 ? ['UPPER LEVELS','REDUCED','Closer to the Surface, and they know it.','the Upper Levels'] : l<=120 ? ['THE MIDS','STANDARD','Nothing to report. That is the report.','the Mids'] : ['DOWN DEEP','DOUBLE','Nobody asks why. You can hear it too.','Down Deep'];
+const pad = n => String(n).padStart(3,'0');
+const $ = q => document.querySelector(q);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const touch = matchMedia('(hover: none)').matches;
+const params = new URLSearchParams(location.search);
+if (params.has('og')) document.body.classList.add('og');
+
+/* ---- clocks, same as the landing page ---- */
+const END = Date.UTC(2026, 8, 29), T0 = Date.UTC(2026, 8, 4);
+const tickEl = $('#tick'); let tickN = 0;
+setInterval(() => { tickN++; tickEl.textContent = String(tickN).padStart(10,'0'); }, 100);
+const sealEl = $('#seal');
+(function seal(){ const f = Math.min(1, Math.max(0, (Date.now()-T0)/(END-T0))); sealEl.textContent = (100*(1-f)).toFixed(4)+'%'; setTimeout(seal, 1000); })();
+
+/* ---- census: written by the Clerk from the holder list. Empty until the gate opens. Never invented. ---- */
+let census = {levels: {}, residents: 0, updated: null};
+const censusReady = fetch('census.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => { if (j && j.levels) census = j; }).catch(() => {});
+const onLevel = l => +(census.levels[l] || 0);
+
+/* ---- assignment: level and door angle from the same digest the landing page uses ---- */
+async function assign(a){
+  const b = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(a.toLowerCase())));
+  return { level: ((b[0]<<8|b[1]) % 144) + 1, theta: ((b[2]<<8|b[3]) / 65536) * Math.PI * 2 };
+}
+/* doors sit on the wall; the number plate hangs at angle zero and nothing hangs over it */
+function clearPlate(th){ th = ((th % (Math.PI*2)) + Math.PI*2) % (Math.PI*2); const d = Math.abs(((th + Math.PI) % (Math.PI*2)) - Math.PI); if (d < .55) th += (th < Math.PI ? 1 : -1) * (.55 - d); return th; }
+/* resident i on level l always gets the same door, and new arrivals never move the old ones */
+function doorAngle(l, i){ const base = (((l * 2654435761) >>> 0) / 4294967296) * Math.PI*2; return clearPlate(base + i * 2.399963); }
+
+/* ---- HUD ---- */
+const hint = $('#hint'), plate = $('#plate'), fmsg = $('#fmsg'), lvlEl = $('#lvl'), bandEl = $('#band'), dot = $('#dot');
+if (touch) hint.textContent = 'Drag down to descend';
+let me = null, gl = null;
+async function submit(a){
+  if (!/^0x[0-9a-fA-F]{40}$/.test(a)) { fmsg.textContent = 'That is not an address. The Clerk does not guess.'; fmsg.classList.add('o'); return; }
+  fmsg.classList.remove('o'); fmsg.textContent = 'Assignment on record.';
+  const {level, theta} = await assign(a); await censusReady;
+  me = {level, theta: clearPlate(theta), short: a.slice(2,8).toUpperCase()};
+  const [where, cls, note] = band(level); const n = onLevel(level);
+  const others = census.updated ? `${n} other resident${n===1?'':'s'} on this level.` : 'No other residents yet. The census opens at the gate.';
+  plate.innerHTML = `<div class="h">Resident ${me.short}</div>
+    <div>Level <b>${pad(level)}</b> · <b>${where}</b></div>
+    <div>Ration class: <b>${cls}</b> · Airlock clearance: <b>NONE</b></div>
+    <div>${others} ${note}</div>
+    ${SEALED[level] ? `<div class="o">${SEALED[level]}</div>` : ''}
+    <div class="row"><button type="button" class="btn" id="share">Post your level</button></div>`;
+  plate.classList.add('in');
+  $('#share').addEventListener('click', share);
+  hint.textContent = 'Your door is lit. Nobody else can see which one.';
+  if (gl) gl.goTo(me);
+}
+$('#finder').addEventListener('submit', e => { e.preventDefault(); submit($('#addr').value.trim()); });
+async function share(){
+  const [, cls, , prose] = band(me.level);
+  const text = `Level ${pad(me.level)}, ${prose}. Ration class ${cls.toLowerCase()}. Assigned by the Sequencer.`;
+  const url = 'https://ration-layer.pages.dev/shaft';
+  const btn = $('#share');
+  if (navigator.share) { try { await navigator.share({title: 'RATION', text, url}); } catch {} return; }
+  try { await navigator.clipboard.writeText(text + ' ' + url); btn.textContent = 'Copied. Post it.'; } catch { btn.textContent = 'Copy failed'; }
+}
+
+/* ---- the shaft ---- */
+function shaft(){
+  const cv = $('#gl');
+  const renderer = new THREE.WebGLRenderer({canvas: cv, antialias: true, powerPreference: 'high-performance'});
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, touch ? 1.5 : 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.1;
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x0a0b0c, 0.045);
+  const cam = new THREE.PerspectiveCamera(72, 1, .1, 90);
+  const rig = new THREE.Group(); rig.add(cam); scene.add(rig);
+  const m4 = new THREE.Matrix4(), col = new THREE.Color(), v3 = new THREE.Vector3(), q = new THREE.Quaternion(), e3 = new THREE.Euler(), one = new THREE.Vector3(1,1,1);
+
+  /* concrete */
+  function concrete(){
+    const c = document.createElement('canvas'); c.width = c.height = 512; const x = c.getContext('2d');
+    x.fillStyle = '#3b3f44'; x.fillRect(0,0,512,512);
+    let s = 7; const r = () => (s = (s * 48271) % 2147483647) / 2147483647;
+    for (let i=0;i<26000;i++){ const v = 40 + r()*40; x.fillStyle = `rgba(${v},${v+2},${v+5},${r()*.5})`; x.fillRect(r()*512, r()*512, 1+r()*2, 1+r()*2); }
+    for (let i=0;i<10;i++){ x.strokeStyle = `rgba(0,0,0,${.08+r()*.12})`; x.lineWidth = 1; x.beginPath(); const y=r()*512; x.moveTo(0,y); x.lineTo(512,y+(r()-.5)*30); x.stroke(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(6, 40); t.colorSpace = THREE.SRGBColorSpace; return t;
+  }
+  const wall = new THREE.Mesh(new THREE.CylinderGeometry(R, R, LV*H + 24, 64, 1, true), new THREE.MeshStandardMaterial({color: 0x9a9ea6, map: concrete(), side: THREE.BackSide, roughness: .96}));
+  wall.position.y = yOf(LV)/2 + 2; scene.add(wall);
+  const lid = new THREE.Mesh(new THREE.CircleGeometry(R, 64), new THREE.MeshStandardMaterial({color: 0x15181b, roughness: 1})); lid.rotation.x = Math.PI/2; lid.position.y = 3.2; scene.add(lid);
+
+  /* one floor ledge per level */
+  const ledges = new THREE.InstancedMesh(new THREE.RingGeometry(R - .75, R + .02, 64), new THREE.MeshStandardMaterial({color: 0xffffff, roughness: .9, side: THREE.DoubleSide}), LV);
+  for (let l=1; l<=LV; l++){ m4.makeRotationX(-Math.PI/2); m4.setPosition(0, yOf(l), 0); ledges.setMatrixAt(l-1, m4); ledges.setColorAt(l-1, col.set(SEALED[l] ? 0x7a3a12 : l>120 ? 0x33302b : 0x2a2e33)); }
+  scene.add(ledges);
+
+  /* number plates from one atlas; the wall curves, so the plate stands off it */
+  const plateMat = new THREE.MeshBasicMaterial({color: 0xffffff, fog: true});
+  const plates = [];
+  for (let l=1; l<=LV; l++){ const p = new THREE.Mesh(new THREE.PlaneGeometry(2.4, .9), plateMat); p.position.set(0, yOf(l) + 1.7, -R + .3); scene.add(p); plates.push(p); }
+  const p145 = new THREE.Mesh(new THREE.PlaneGeometry(2.4, .9), new THREE.MeshBasicMaterial({color: 0xffffff, transparent: true, opacity: 0, fog: true}));
+  p145.rotation.x = -Math.PI/2; p145.position.set(0, yOf(LV) - 2.6, 0); scene.add(p145);
+  (async () => {
+    await Promise.race([document.fonts.load('46px "Allerta Stencil"'), new Promise(r => setTimeout(r, 2500))]).catch(() => {});
+    const cols = 12, cw = 320, ch = 120, c = document.createElement('canvas'); c.width = cols*cw; c.height = 12*ch; const x = c.getContext('2d');
+    const cell = (ox, oy, txt, sub, hot) => { x.fillStyle = '#121416'; x.fillRect(ox, oy, cw, ch); x.strokeStyle = hot ? '#ff6a1a' : '#3a3f45'; x.lineWidth = 2; x.strokeRect(ox+2, oy+2, cw-4, ch-4);
+      x.fillStyle = hot ? '#ff6a1a' : '#d6d9dd'; x.font = '46px "Allerta Stencil", Impact, sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'center'; x.fillText(txt, ox+cw/2, oy+ch/2 - (sub ? 14 : 0));
+      if (sub) { x.font = '18px "IBM Plex Mono", monospace'; x.fillStyle = '#ff8a4a'; x.fillText(sub, ox+cw/2, oy+ch/2+32); } };
+    for (let l=1; l<=LV; l++) cell((l-1)%cols*cw, Math.floor((l-1)/cols)*ch, 'LEVEL ' + pad(l), SEALED[l] ? 'FILE SEALED' : '', !!SEALED[l]);
+    const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4; plateMat.map = tex; plateMat.needsUpdate = true;
+    for (let l=1; l<=LV; l++){ const uv = plates[l-1].geometry.attributes.uv, i = l-1, u0 = (i%cols)/cols, v1 = 1 - Math.floor(i/cols)/12, u1 = u0 + 1/cols, v0 = v1 - 1/12;
+      uv.setXY(0,u0,v1); uv.setXY(1,u1,v1); uv.setXY(2,u0,v0); uv.setXY(3,u1,v0); uv.needsUpdate = true; }
+    const c2 = document.createElement('canvas'); c2.width = cw; c2.height = ch; const x2 = c2.getContext('2d');
+    x2.fillStyle = '#121416'; x2.fillRect(0,0,cw,ch); x2.strokeStyle = '#ff6a1a'; x2.lineWidth = 2; x2.strokeRect(2,2,cw-4,ch-4);
+    x2.fillStyle = '#ff6a1a'; x2.font = '46px "Allerta Stencil", Impact, sans-serif'; x2.textBaseline = 'middle'; x2.textAlign = 'center'; x2.fillText('LEVEL 145', cw/2, ch/2 - 14);
+    x2.font = '18px "IBM Plex Mono", monospace'; x2.fillStyle = '#ff8a4a'; x2.fillText('FILED BY PROCESS 4', cw/2, ch/2 + 32);
+    const t2 = new THREE.CanvasTexture(c2); t2.colorSpace = THREE.SRGBColorSpace; p145.material.map = t2; p145.material.needsUpdate = true;
+  })();
+
+  /* residents: one lit window each, placed by level and order, from the census */
+  const paneGeo = new THREE.PlaneGeometry(.36, .6), frameGeo = new THREE.PlaneGeometry(.5, .74);
+  let panes = null, frames = null; const doorsOn = {};
+  function place(mesh, i, th, y, r){ v3.set(Math.sin(th)*r, y, -Math.cos(th)*r); q.setFromEuler(e3.set(0, -th, 0)); m4.compose(v3, q, one); mesh.setMatrixAt(i, m4); }
+  function buildDoors(){
+    const total = Object.values(census.levels).reduce((a,b) => a + (+b || 0), 0); if (!total) return;
+    panes = new THREE.InstancedMesh(paneGeo, new THREE.MeshBasicMaterial({color: 0xffffff, fog: true}), total);
+    frames = new THREE.InstancedMesh(frameGeo, new THREE.MeshBasicMaterial({color: 0x0c0d0e, fog: true}), total);
+    let i = 0, s = 4663; const r = () => (s = (s * 48271) % 2147483647) / 2147483647;
+    for (let l=1; l<=LV; l++){ const n = onLevel(l); doorsOn[l] = [];
+      for (let k=0; k<n; k++){ const th = doorAngle(l, k), y = yOf(l) + 1.05 + ((k*7)%5)*.08; doorsOn[l].push(th);
+        place(panes, i, th, y, R - .1); place(frames, i, th, y, R - .08); const w = .28 + r()*.3; panes.setColorAt(i, col.setRGB(w, w*.72, w*.45)); i++; } }
+    scene.add(frames); scene.add(panes);
+  }
+  censusReady.then(buildDoors);
+
+  /* your door */
+  const you = new THREE.Group(); you.visible = false; scene.add(you);
+  const youFrame = new THREE.Mesh(new THREE.PlaneGeometry(.62, .96), new THREE.MeshBasicMaterial({color: 0x0c0d0e, fog: true})); youFrame.position.z = .02; you.add(youFrame);
+  const youPane = new THREE.Mesh(new THREE.PlaneGeometry(.46, .8), new THREE.MeshBasicMaterial({color: 0xff6a1a, fog: true})); youPane.position.z = .05; you.add(youPane);
+  const youLight = new THREE.PointLight(0xff6a1a, 0, 6, 2); youLight.position.z = .8; you.add(youLight);
+
+  /* light */
+  scene.add(new THREE.AmbientLight(0x3a3e46, 2.2));
+  scene.add(new THREE.HemisphereLight(0x2a2d33, 0x14110c, 1.4));
+  const lamp = new THREE.PointLight(0xffe0c4, 240, 24, 2); lamp.position.set(0, 1.2, 0); rig.add(lamp);
+  const below = new THREE.PointLight(0xff6a1a, 400, 40, 2); below.position.set(0, yOf(LV) - 3.5, 0); scene.add(below);
+
+  /* the bottom: a grate, and light from under it */
+  const grate = new THREE.Group(), barMat = new THREE.MeshStandardMaterial({color: 0x2b2f34, roughness: .7, metalness: .6});
+  for (let i=-5; i<=5; i++){ const b = new THREE.Mesh(new THREE.BoxGeometry(.12, .1, R*2-.6), barMat); b.position.x = i; grate.add(b); const c = new THREE.Mesh(new THREE.BoxGeometry(R*2-.6, .1, .12), barMat); c.position.z = i; grate.add(c); }
+  grate.position.y = yOf(LV) - .9; scene.add(grate);
+  const glow = new THREE.Mesh(new THREE.CircleGeometry(R, 64), new THREE.MeshBasicMaterial({color: 0xff5a10, fog: true})); glow.rotation.x = -Math.PI/2; glow.position.y = yOf(LV) - 4; scene.add(glow);
+
+  /* dust */
+  const DN = touch ? 350 : 700, dpos = new Float32Array(DN*3), dgeo = new THREE.BufferGeometry();
+  for (let i=0;i<DN;i++){ dpos[i*3] = (Math.random()-.5)*R*1.8; dpos[i*3+1] = (Math.random()-.5)*40; dpos[i*3+2] = (Math.random()-.5)*R*1.8; }
+  dgeo.setAttribute('position', new THREE.BufferAttribute(dpos, 3));
+  const dust = new THREE.Points(dgeo, new THREE.PointsMaterial({color: 0xffc9a0, size: .045, transparent: true, opacity: .55, fog: true})); scene.add(dust);
+
+  /* controls: wheel and keys descend, drag looks; on touch a vertical drag descends; the phone's tilt looks */
+  let targetY = 0, camY = 0, vy = 0, yaw = 0, pitch = 0, dragYaw = 0, dragPitch = 0, gy = 0, gp = 0;
+  let px = .5, py = .5, dragging = false, lx = 0, ly = 0, lastDy = 0;
+  const clampY = y => Math.min(0, Math.max(yOf(LV) - 1.4, y));
+  addEventListener('wheel', ev => { if (ev.target.closest('.br')) return; targetY = clampY(targetY - ev.deltaY * (ev.deltaMode === 1 ? .2 : .012)); }, {passive: true});
+  cv.addEventListener('pointerdown', ev => { dragging = true; lx = ev.clientX; ly = ev.clientY; lastDy = 0; vy = 0; cv.setPointerCapture(ev.pointerId); });
+  cv.addEventListener('pointermove', ev => { px = ev.clientX/innerWidth; py = ev.clientY/innerHeight; if (!dragging) return;
+    const dx = ev.clientX - lx, dy = ev.clientY - ly; lx = ev.clientX; ly = ev.clientY;
+    if (ev.pointerType === 'touch') { targetY = clampY(targetY + dy * .03); lastDy = dy; dragYaw -= dx * .006; }
+    else { dragYaw -= dx * .005; dragPitch = THREE.MathUtils.clamp(dragPitch - dy * .004, -.6, .6); } });
+  const up = ev => { if (!dragging) return; dragging = false; if (ev.pointerType === 'touch') vy = lastDy * .03; };
+  cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+  addEventListener('keydown', ev => { if (ev.target.tagName === 'INPUT') return; const k = ev.key;
+    if (k === 'ArrowDown' || k === 'j') targetY = clampY(targetY - H); else if (k === 'ArrowUp' || k === 'k') targetY = clampY(targetY + H);
+    else if (k === 'PageDown') targetY = clampY(targetY - H*10); else if (k === 'PageUp') targetY = clampY(targetY + H*10);
+    else if (k === 'End') targetY = clampY(yOf(LV)); else if (k === 'Home') targetY = 0; else return; ev.preventDefault(); });
+  function onOrient(ev){ if (ev.gamma == null) return; gy = THREE.MathUtils.clamp(ev.gamma, -45, 45)/45 * .6; gp = THREE.MathUtils.clamp((ev.beta ?? 60) - 60, -35, 35)/35 * .35; }
+  if (touch && 'DeviceOrientationEvent' in window && !reduce) {
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') cv.addEventListener('click', () => DeviceOrientationEvent.requestPermission().then(s => { if (s === 'granted') addEventListener('deviceorientation', onOrient); }).catch(() => {}), {once: true});
+    else addEventListener('deviceorientation', onOrient);
+  }
+  function resize(){ renderer.setSize(innerWidth, innerHeight, false); cam.aspect = innerWidth/innerHeight; cam.updateProjectionMatrix(); }
+  addEventListener('resize', resize); resize();
+
+  /* HUD readout */
+  let shown = 0, bottomSaid = false;
+  function readout(){
+    const l = Math.min(LV, Math.max(1, Math.round(-camY/H) + 1)); if (l === shown) return; shown = l;
+    lvlEl.textContent = pad(l); bandEl.textContent = band(l)[0]; bandEl.style.color = SEALED[l] ? '#ff6a1a' : l>120 ? '#ff8a4a' : '';
+    dot.style.top = `calc(${((l-1)/(LV-1)*100).toFixed(1)}% - 4px)`;
+    if (l === LV && !bottomSaid) { bottomSaid = true; if (!me) hint.textContent = 'The shaft ends here. The Clerk\'s file says so.'; }
+  }
+
+  function goTo(who){
+    let th = who.theta; for (const d of doorsOn[who.level] || []) if (Math.abs(d - th) < .3) th = clearPlate(th + .35);
+    you.position.set(Math.sin(th)*(R-.12), yOf(who.level) + 1.2, -Math.cos(th)*(R-.12)); you.rotation.set(0, -th, 0); you.visible = true;
+    targetY = clampY(yOf(who.level)); dragYaw = -th; dragPitch = 0; vy = 0;
+    if (reduce) camY = targetY;
+  }
+
+  /* loop */
+  const clock = new THREE.Clock(); let t = 0, first = true;
+  renderer.setAnimationLoop(() => {
+    t = clock.getElapsedTime();
+    if (!dragging && Math.abs(vy) > .001) { targetY = clampY(targetY + vy); vy *= .92; }
+    camY += (targetY - camY) * (reduce ? 1 : .06);
+    const yawT = (touch ? 0 : (px - .5) * 1.1) + dragYaw + gy, pitchT = (touch ? 0 : -(py - .5) * .7) + dragPitch + gp;
+    yaw += (yawT - yaw) * .08; pitch += (THREE.MathUtils.clamp(pitchT, -1.25, .7) - pitch) * .08;
+    rig.position.set(0, camY + (touch ? .35 : 1.5), 0); rig.rotation.set(0, yaw, 0); cam.rotation.set(pitch, 0, 0);
+    const depth = Math.min(1, Math.max(0, -camY / (LV*H)));
+    scene.fog.density = .042 + depth * depth * .05; scene.fog.color.setRGB(.039 + depth*.05, .043 + depth*.02, .047); renderer.setClearColor(scene.fog.color);
+    if (!reduce) {
+      lamp.intensity = 240 + Math.sin(t*9.3)*10 + (Math.random() < .02 ? -90 : 0);
+      const p = dgeo.attributes.position.array; for (let i=0;i<DN;i++){ p[i*3+1] += .006 + (i%7)*.001; p[i*3] += Math.sin(t*.7 + i)*.0015; if (p[i*3+1] > 20) p[i*3+1] = -20; } dgeo.attributes.position.needsUpdate = true;
+      p145.material.opacity = Math.random() < .93 ? .55 + Math.sin(t*4)*.15 : 0;
+    } else p145.material.opacity = .6;
+    dust.position.y = camY;
+    if (you.visible) { const k = reduce ? 1 : 1 + Math.sin(t*3.2)*.05; youPane.scale.set(k,k,1); youLight.intensity = reduce ? 12 : 12 + Math.sin(t*3.2)*4; }
+    readout();
+    renderer.render(scene, cam);
+    if (first) { first = false; cv.classList.add('on'); }
+  });
+  return {goTo};
+}
+
+try { gl = shaft(); }
+catch (err) { console.warn('The shaft did not render.', err); $('#nogl').classList.add('on'); $('#gl').remove(); hint.textContent = 'No shaft on this device. Your assignment still stands.'; }
+
+const qa = params.get('addr'); if (qa) { $('#addr').value = qa; submit(qa); }
+console.log('%cCLERK PROCESS 7', 'color:#ff6a1a;font-weight:bold', 'The shaft has a bottom. The Clerk has not been below it.');
+</script>
+</body>
+</html>
