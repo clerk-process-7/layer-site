@@ -89,6 +89,19 @@ main{position:relative;z-index:2}
 .hero h1 .glitch.on{text-shadow:-2px 0 var(--orange),2px 0 #4ad2ff}
 .hero .sub{margin-top:1.4rem;font-size:1.05rem;color:var(--muted);max-width:46ch}
 .hero .cta{margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap}
+.cta form{display:flex;flex:1 1 320px;min-width:0}
+.cta input{flex:1;min-width:0;background:rgba(15,17,19,.85);border:1px solid var(--line-2);border-right:0;color:var(--text);font-family:var(--mono);font-size:.9rem;padding:.85rem 1rem;border-radius:var(--radius) 0 0 var(--radius);outline:none;transition:border-color .2s var(--ease)}
+.cta input:focus{border-color:var(--orange)}
+.cta form .btn{border-radius:0 var(--radius) var(--radius) 0;white-space:nowrap;cursor:pointer}
+.btn[hidden]{display:none}
+.fmsg{margin-top:.8rem;max-width:46ch;font-size:.82rem;color:var(--muted)}
+.fmsg .o{display:block;margin-top:.25rem}
+.card .hd span.o{color:var(--orange)}
+@media (max-width:600px){
+  .cta form{flex-wrap:wrap;gap:.6rem}
+  .cta input{flex:1 1 100%;border-right:1px solid var(--line-2);border-radius:var(--radius)}
+  .cta form .btn{flex:1 1 100%;justify-content:center;border-radius:var(--radius)}
+}
 .count{margin-top:2.2rem;display:grid;grid-template-columns:repeat(4,auto);gap:1.4rem;width:max-content}
 .count div{display:grid;gap:.25rem}
 .count b{font-family:var(--stencil);font-weight:400;font-size:clamp(1.9rem,4vw,3rem);line-height:1;color:var(--orange);font-variant-numeric:tabular-nums}
@@ -105,6 +118,7 @@ main{position:relative;z-index:2}
 @media (max-width:900px){
   .hero{padding:5.5rem 0 3rem}
   .hero .wrap{grid-template-columns:1fr;gap:2.4rem}
+  .hero .wrap>div{min-width:0}
   .hero .ghost-n{font-size:40vw;top:2%}
 }
 
@@ -259,13 +273,18 @@ footer p{max-width:70ch}
       </div>
       <div class="cta">
         <a class="btn" href="https://www.ponsfamily.com/launchpad" rel="noopener">Buy on Pons</a>
-        <a class="btn ghost" href="/shaft">Find your level</a>
+        <form id="finder" autocomplete="off">
+          <input id="addr" type="text" inputmode="text" spellcheck="false" placeholder="0x wallet address" aria-label="Wallet address">
+          <button class="btn ghost" type="submit" id="find">Find your level</button>
+          <a class="btn ghost" id="descend" hidden>Descend to your door</a>
+        </form>
       </div>
+      <p class="fmsg" id="fmsg" aria-live="polite">Any EVM address. Nothing is sent anywhere.</p>
     </div>
     <div class="cardwrap" data-depth="-16">
       <div class="card" id="card">
         <div class="hole"></div>
-        <div class="hd"><b>RATION CARD</b><span>SERIES A</span></div>
+        <div class="hd"><b>RATION CARD</b><span id="c-ser">SERIES A</span></div>
         <div class="mid">
           <div class="f"><div class="label">Resident</div><div class="v" id="c-res">UNASSIGNED</div></div>
           <div class="f"><div class="label">Level</div><div class="v o" id="c-lvl">___</div></div>
@@ -509,6 +528,36 @@ footer p{max-width:70ch}
     card.addEventListener('pointerleave', () => { card.style.setProperty('--ry','0deg'); card.style.setProperty('--rx','0deg'); card.style.setProperty('--sx','-40%'); });
   }
 
+
+  /* ---- level finder: stamps the card, then offers the descent ---- */
+  const finder=$('#finder'), addr=$('#addr'), fmsg=$('#fmsg'), find=$('#find'), descend=$('#descend');
+  const cres=$('#c-res'), clvl=$('#c-lvl'), ccls=$('#c-cls'), cser=$('#c-ser');
+  const pad = n => String(n).padStart(3,'0');
+  const sealed = {4:'Process 4 filed its last entry from this level. The file is missing. The level is not.', 7:'This level belongs to a process. You should not be able to stand here.', 144:'The noise is loudest here. A file for this level exists and is sealed until the seal reads zero.', 29:'Twenty-nine. The Clerk has stopped assigning meaning to that number. It keeps coming up.', 63:'Order 4663 was signed on this level. The signature is redacted. The ink is not.'};
+  const band = l => l<=24 ? ['the Upper Levels','REDUCED'] : l<=120 ? ['the Mids','STANDARD'] : ['Down Deep','DOUBLE'];
+  async function levelOf(a){ const b = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(a.toLowerCase()))); return ((b[0]<<8|b[1]) % 144) + 1; }
+  function roll(target){
+    if (reduce) { clvl.textContent = pad(target); return; }
+    const t0 = performance.now(), dur = 900; let done = false;
+    (function f(t){ if (done) return; const k = Math.min(1,(t-t0)/dur); clvl.textContent = pad(k<1 ? Math.round(Math.random()*143+1) : target); if (k<1) requestAnimationFrame(f); else done = true; })(t0);
+    setTimeout(() => { done = true; clvl.textContent = pad(target); }, dur + 60);
+  }
+  let assigned = null;
+  async function assign(a, scroll){
+    if (!/^0x[0-9a-fA-F]{40}$/.test(a)) { fmsg.textContent = 'That is not an address. The Clerk does not guess.'; fmsg.classList.add('o'); return; }
+    fmsg.classList.remove('o');
+    const l = await levelOf(a); const [where, cls] = band(l);
+    assigned = a; try { localStorage.setItem('ration.addr', a); } catch {}
+    cres.textContent = a.slice(2,8).toUpperCase(); roll(l); ccls.textContent = cls;
+    cser.textContent = sealed[l] ? 'FILE SEALED' : 'SERIES A'; cser.classList.toggle('o', !!sealed[l]);
+    fmsg.innerHTML = `Level ${pad(l)}, ${where}. Ration class ${cls.toLowerCase()}.` + (sealed[l] ? `<span class="o">${sealed[l]}</span>` : '');
+    descend.href = '/shaft?addr=' + a; find.hidden = true; descend.hidden = false;
+    if (scroll && innerWidth <= 900) card.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block: 'center'});
+  }
+  finder.addEventListener('submit', e => { e.preventDefault(); assign(addr.value.trim(), true); });
+  addr.addEventListener('input', () => { if (assigned && addr.value.trim() !== assigned) { find.hidden = false; descend.hidden = true; } });
+  const qa = new URLSearchParams(location.search).get('addr'); let stored = null; try { stored = localStorage.getItem('ration.addr'); } catch {}
+  const initial = (qa && /^0x[0-9a-fA-F]{40}$/.test(qa)) ? qa : stored; if (initial) { addr.value = initial; assign(initial, false); }
 })();
 </script>
 </body>
