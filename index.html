@@ -173,29 +173,6 @@ section h2{font-size:clamp(2rem,4.6vw,3.6rem);margin-bottom:2rem}
 @media (hover:none){.file .pic{opacity:.14;transform:none}}
 @media (max-width:640px){.file{grid-template-columns:1fr;gap:.6rem}}
 
-/* levels */
-.levels{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
-@media (max-width:900px){.levels{grid-template-columns:1fr}}
-.finder{display:grid;gap:.8rem;max-width:520px}
-.finder .row{display:flex;gap:.6rem}
-.finder input{flex:1;min-width:0;background:var(--bg-2);border:1px solid var(--line-2);color:var(--text);font-family:var(--mono);font-size:.9rem;padding:.85rem 1rem;border-radius:var(--radius);outline:none;
-  transition:border-color .2s var(--ease)}
-.finder input:focus{border-color:var(--orange)}
-.finder button{font-family:var(--stencil);letter-spacing:.14em;text-transform:uppercase;background:var(--orange);color:#0a0b0c;border:1px solid var(--orange);padding:0 1.2rem;border-radius:var(--radius);
-  transition:transform .18s var(--ease),background .18s var(--ease)}
-.finder button:active{transform:scale(.97)}
-@media (hover:hover) and (pointer:fine){.finder button:hover{background:var(--orange-2)}}
-.assign{margin-top:1.6rem;border-top:1px solid var(--line);padding-top:1.2rem;min-height:9rem}
-.assign .big{font-family:var(--stencil);font-size:clamp(3.4rem,8vw,6rem);line-height:1;color:var(--orange);font-variant-numeric:tabular-nums}
-.assign .big small{font-size:.35em;color:var(--muted);letter-spacing:.2em;margin-right:.5rem}
-.assign .meta{margin-top:.8rem;display:grid;gap:.25rem;color:var(--muted)}
-.assign .meta b{font-weight:500;color:var(--text)}
-.grid144{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;width:min(100%,420px);justify-self:end}
-.grid144 i{display:block;aspect-ratio:1;background:var(--line);border-radius:1px;transition:background .4s var(--ease),transform .4s var(--ease);will-change:transform}
-.grid144 i.hot{background:var(--orange);box-shadow:0 0 12px var(--orange);transform:scale(1.25)}
-.grid144 i.warm{background:var(--line-2)}
-@media (max-width:900px){.grid144{justify-self:start;width:min(100%,340px)}}
-
 /* rations */
 .terms{margin:0;border-top:1px solid var(--line);max-width:900px}
 .terms>div{display:grid;grid-template-columns:12rem 1fr;gap:1.2rem;padding:1rem 0;border-bottom:1px solid var(--line)}
@@ -245,7 +222,6 @@ footer p{max-width:70ch}
     <nav aria-label="Site">
       <a href="#transmission">Transmission</a>
       <a href="#layer">The Layer</a>
-      <a href="#levels">Levels</a>
       <a href="/shaft">The Shaft</a>
       <a href="#rations">Rations</a>
       <a href="#calendar">Calendar</a>
@@ -283,7 +259,7 @@ footer p{max-width:70ch}
       </div>
       <div class="cta">
         <a class="btn" href="https://www.ponsfamily.com/launchpad" rel="noopener">Buy on Pons</a>
-        <a class="btn ghost" href="#levels">Find your level</a>
+        <a class="btn ghost" href="/shaft">Find your level</a>
       </div>
     </div>
     <div class="cardwrap" data-depth="-16">
@@ -346,30 +322,6 @@ footer p{max-width:70ch}
         <div class="no">FILE 05</div>
         <div><h3>The Rations</h3><p>Issued daily to residents from the levy on every trade. Free gas until the 29th. After that: <span class="redact o">sealed until the seal reads zero.</span></p></div>
       </article>
-    </div>
-  </div>
-</section>
-
-<section id="levels">
-  <div class="wrap">
-    <p class="label reveal">Assignment</p>
-    <h2 class="reveal">Find your level</h2>
-    <div class="levels">
-      <div class="reveal">
-        <p style="color:var(--muted);max-width:52ch;margin-bottom:1.4rem">Every resident is assigned a level from the hash of their wallet. It is deterministic. The Clerk cannot change it, and neither can you. Every level has a door. <a href="/shaft">The Shaft</a> goes down to it.</p>
-        <form class="finder" id="finder" autocomplete="off">
-          <div class="row">
-            <input id="addr" type="text" inputmode="text" spellcheck="false" placeholder="0x wallet address" aria-label="Wallet address">
-            <button type="submit">Assign</button>
-          </div>
-          <p class="label" id="fmsg">Any EVM address. Nothing is sent anywhere.</p>
-        </form>
-        <div class="assign" id="assign" aria-live="polite">
-          <div class="big"><small>LEVEL</small><span id="lv">___</span></div>
-          <div class="meta" id="lmeta"></div>
-        </div>
-      </div>
-      <div class="grid144 reveal" id="grid" aria-hidden="true"></div>
     </div>
   </div>
 </section>
@@ -557,36 +509,6 @@ footer p{max-width:70ch}
     card.addEventListener('pointerleave', () => { card.style.setProperty('--ry','0deg'); card.style.setProperty('--rx','0deg'); card.style.setProperty('--sx','-40%'); });
   }
 
-  /* ---- 144 grid ---- */
-  const grid = $('#grid'); for (let i=0;i<144;i++){ const el=document.createElement('i'); el.dataset.n=i+1; grid.appendChild(el); }
-
-  /* ---- level finder ---- */
-  const finder=$('#finder'), addr=$('#addr'), fmsg=$('#fmsg'), lv=$('#lv'), lmeta=$('#lmeta');
-  const cres=$('#c-res'), clvl=$('#c-lvl'), ccls=$('#c-cls');
-  async function levelOf(a){
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(a.toLowerCase()));
-    const b = new Uint8Array(buf); return ((b[0]<<8|b[1]) % 144) + 1;
-  }
-  function band(l){ return l<=24 ? ['UPPER LEVELS','REDUCED','Closer to the Surface, and they know it.'] : l<=120 ? ['THE MIDS','STANDARD','Nothing to report. That is the report.'] : ['DOWN DEEP','DOUBLE','Nobody asks why. You can hear it too.']; }
-  const sealed = {4:'Process 4 filed its last entry from this level. The file is missing. The level is not.', 7:'This level belongs to a process. You should not be able to stand here.', 144:'The noise is loudest here. A file for this level exists and is sealed until the seal reads zero.', 29:'Twenty-nine. The Clerk has stopped assigning meaning to that number. It keeps coming up.', 63:'Order 4663 was signed on this level. The signature is redacted. The ink is not.'};
-  function roll(target){
-    if (reduce) { lv.textContent = String(target).padStart(3,'0'); return; }
-    const t0 = performance.now(), dur = 900;
-    setTimeout(() => { lv.textContent = String(target).padStart(3,'0'); lv.style.opacity = 1; }, dur + 80);
-    (function f(t){ const k = Math.min(1,(t-t0)/dur); const e = 1-Math.pow(1-k,3); const v = k<1 ? Math.round(Math.random()*143+1) : target; lv.textContent = String(k<1?v:target).padStart(3,'0'); lv.style.opacity = .55+.45*e; if (k<1) requestAnimationFrame(f); })(t0);
-  }
-  finder.addEventListener('submit', async e => {
-    e.preventDefault();
-    const a = addr.value.trim();
-    if (!/^0x[0-9a-fA-F]{40}$/.test(a)) { fmsg.textContent = 'That is not an address. The Clerk does not guess.'; fmsg.classList.add('o'); return; }
-    fmsg.classList.remove('o'); fmsg.textContent = 'Assignment on record.';
-    const l = await levelOf(a); const [where, cls, note] = band(l);
-    roll(l);
-    const extra = sealed[l] ? `<div class="o">${sealed[l]}</div>` : '';
-    lmeta.innerHTML = `<div><b>${where}</b></div><div>Ration class: <b>${cls}</b></div><div>Airlock clearance: <b>NONE</b></div><div>${note}</div>${extra}<div>${a.slice(0,6)}&hellip;${a.slice(-4)}</div><div style="margin-top:.8rem"><a class="btn ghost" href="/shaft?addr=${a}">Descend to your door</a></div>`;
-    grid.querySelectorAll('i').forEach(el => { el.classList.remove('hot','warm'); const n=+el.dataset.n; if (n===l) el.classList.add('hot'); else if (Math.abs(n-l)<=12) el.classList.add('warm'); });
-    cres.textContent = a.slice(2,8).toUpperCase(); clvl.textContent = String(l).padStart(3,'0'); ccls.textContent = cls;
-  });
 })();
 </script>
 </body>
