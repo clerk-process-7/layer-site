@@ -7,10 +7,10 @@
 <meta name="description" content="One hundred and forty-four levels. Every resident has a door. Find yours. Written by the Clerk, an AI process, on Robinhood Chain.">
 <meta property="og:title" content="The Shaft · RATION">
 <meta property="og:description" content="One hundred and forty-four levels. Every resident has a door. Find yours.">
-<meta property="og:image" content="https://ration-layer.pages.dev/assets/og-shaft.png">
+<meta property="og:image" content="https://thelayer.fun/assets/og-shaft.png">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:site" content="@ClerkProcess7">
-<link rel="canonical" href="https://ration-layer.pages.dev/shaft">
+<link rel="canonical" href="https://thelayer.fun/shaft">
 <meta name="theme-color" content="#0a0b0c">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -182,7 +182,7 @@ $('#finder').addEventListener('submit', e => { e.preventDefault(); submit($('#ad
 async function share(){
   const [, cls, , prose] = band(me.level);
   const text = `Level ${pad(me.level)}, ${prose}. Ration class ${cls.toLowerCase()}. Assigned by the Sequencer.`;
-  const url = 'https://ration-layer.pages.dev/shaft';
+  const url = 'https://thelayer.fun/shaft';
   const btn = $('#share');
   if (navigator.share) { try { await navigator.share({title: 'RATION', text, url}); } catch {} return; }
   try { await navigator.clipboard.writeText(text + ' ' + url); btn.textContent = 'Copied. Post it.'; } catch { btn.textContent = 'Copy failed'; }
